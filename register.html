@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AutoTaller - Crear Cuenta</title>
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/login.css">
+<link rel="stylesheet" href="css/register.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="login-section">
+
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="ti ti-car"></i>
+            </div>
+
+            <div>
+                <h2>AutoTaller</h2>
+                <span>Management System</span>
+            </div>
+        </div>
+
+        <h1>Crear Cuenta</h1>
+
+        <p class="register-subtitle">
+            Registra tu taller y comienza a gestionarlo.
+        </p>
+
+        <div id="registerError" class="error-box"></div>
+        <div id="registerSuccess" class="success-box"></div>
+
+        <form id="registerForm">
+
+            <div class="input-group">
+                <input
+                    type="text"
+                    id="fullName"
+                    placeholder="Nombre completo"
+                    required>
+            </div>
+
+            <div class="input-group">
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Correo electrónico"
+                    required>
+            </div>
+
+            <div class="input-group">
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Contraseña"
+                    required>
+
+                <button
+                    type="button"
+                    class="eye-btn"
+                    id="togglePassword">
+
+                    <i class="ti ti-eye"></i>
+
+                </button>
+            </div>
+
+            <div class="input-group">
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirmar contraseña"
+                    required>
+            </div>
+
+            <button
+                type="submit"
+                class="login-btn">
+
+                Crear Cuenta
+
+            </button>
+
+        </form>
+
+        <div class="signup">
+            ¿Ya tienes cuenta?
+            <a href="index.html">
+                Iniciar sesión
+            </a>
+        </div>
+
+    </div>
+
+    <div class="hero-section">
+
+        <div class="hero-content">
+
+            <div class="car-icon">
+                <i class="ti ti-user-plus"></i>
+            </div>
+
+            <h2>
+                Tu taller comienza aquí
+            </h2>
+
+            <p>
+                Gestiona clientes, vehículos, citas,
+                órdenes de servicio e inventario.
+            </p>
+
+        </div>
+
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+        <div class="shape shape4"></div>
+
+    </div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/register.js"></script>
+
+</body>
+</html>

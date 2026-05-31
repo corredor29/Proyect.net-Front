@@ -1,0 +1,18 @@
+.register-subtitle{
+    color:#6b7280;
+    margin-bottom:25px;
+}
+
+.success-box{
+
+    display:none;
+
+    background:#dcfce7;
+    color:#166534;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    margin-bottom:20px;
+}

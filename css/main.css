@@ -1,0 +1,23 @@
+:root{
+
+    --primary:#4F46E5;
+    --secondary:#7C3AED;
+
+    --white:#ffffff;
+
+    --gray100:#f3f4f6;
+    --gray200:#e5e7eb;
+    --gray400:#9ca3af;
+    --gray600:#4b5563;
+    --gray800:#1f2937;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+}
