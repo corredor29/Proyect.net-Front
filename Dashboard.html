@@ -8,170 +8,75 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <link rel="stylesheet" href="css/Dashboard.css">
 </head>
-<body>
-
-    <!-- Sidebar -->
+<body class="light">
+<div class="app">
     <aside class="sidebar">
         <div class="sb-logo">
             <div class="sb-logo-icon"><i class="ti ti-car"></i></div>
-            <div class="sb-logo-text">AutoTaller<span>Management System</span></div>
+            <div class="sb-logo-name">AutoTaller<span>Management System</span></div>
         </div>
-
         <div class="sb-section">Main</div>
         <a href="dashboard.html" class="sb-item active"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
         <a href="pages/customers.html" class="sb-item"><i class="ti ti-users"></i> Customers</a>
         <a href="pages/vehicles.html" class="sb-item"><i class="ti ti-car"></i> Vehicles</a>
-
         <div class="sb-section">Operations</div>
         <a href="pages/service-orders.html" class="sb-item"><i class="ti ti-clipboard-list"></i> Service Orders <span class="sb-badge" id="activeOrdersBadge">0</span></a>
         <a href="pages/appointments.html" class="sb-item"><i class="ti ti-calendar"></i> Appointments</a>
         <a href="pages/quotations.html" class="sb-item"><i class="ti ti-file-invoice"></i> Quotations</a>
-
         <div class="sb-section">Finance</div>
         <a href="pages/invoices.html" class="sb-item"><i class="ti ti-receipt"></i> Invoices</a>
         <a href="pages/suppliers.html" class="sb-item"><i class="ti ti-building-store"></i> Suppliers</a>
         <a href="pages/parts.html" class="sb-item"><i class="ti ti-tools"></i> Parts</a>
-
         <div class="sb-section">System</div>
         <a href="pages/users.html" class="sb-item"><i class="ti ti-user-cog"></i> Users</a>
         <a href="pages/audit-logs.html" class="sb-item"><i class="ti ti-history"></i> Audit Logs</a>
-
         <div class="sb-bottom">
-            <div class="sb-user" id="sbUser">
+            <div class="sb-user">
                 <div class="sb-avatar" id="sbAvatar">SA</div>
                 <div>
                     <div class="sb-user-name" id="sbUserName">Loading...</div>
                     <div class="sb-user-role" id="sbUserRole">---</div>
                 </div>
-                <i class="ti ti-logout" style="color:rgba(255,255,255,0.3);font-size:15px;margin-left:auto" id="logoutBtn"></i>
+                <i class="ti ti-logout" style="margin-left:auto;font-size:15px;color:#aaa" id="logoutBtn"></i>
             </div>
         </div>
     </aside>
-
-    <!-- Main -->
     <div class="main">
-
-        <!-- Navbar -->
         <nav class="navbar">
             <span class="nav-title">Dashboard</span>
-            <div class="nav-search">
-                <i class="ti ti-search"></i>
-                <input type="text" placeholder="Search orders, customers, vehicles..."/>
-            </div>
-            <div class="nav-actions">
-                <div class="nav-btn notif-dot" title="Notifications"><i class="ti ti-bell"></i></div>
-                <div class="nav-btn" title="Settings"><i class="ti ti-settings"></i></div>
-            </div>
+            <div class="nav-search"><i class="ti ti-search"></i><input type="text" placeholder="Search orders, customers, vehicles..."/></div>
+            <button class="theme-toggle" id="themeBtn"><i class="ti ti-moon" id="themeIcon"></i><span id="themeLabel">Dark</span></button>
+            <div class="nav-btn notif-dot"><i class="ti ti-bell"></i></div>
         </nav>
-
-        <!-- Content -->
         <div class="content">
-
             <div class="page-header">
-                <div>
-                    <h1>Dashboard</h1>
-                    <p id="dateLabel">Loading...</p>
-                </div>
-                <a href="pages/service-orders.html" class="btn btn-primary">
-                    <i class="ti ti-plus"></i> New Order
-                </a>
+                <div><h1>Dashboard</h1><p id="dateLabel">Loading...</p></div>
+                <a href="pages/service-orders.html" class="btn-primary"><i class="ti ti-plus"></i> New Order</a>
             </div>
-
-            <!-- Stats -->
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <span class="stat-label">Total Customers</span>
-                        <div class="stat-icon blue"><i class="ti ti-users"></i></div>
-                    </div>
-                    <div class="stat-value" id="statCustomers">—</div>
-                    <div class="stat-change"><i class="ti ti-users"></i> Registered customers</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <span class="stat-label">Active Orders</span>
-                        <div class="stat-icon amber"><i class="ti ti-clipboard-list"></i></div>
-                    </div>
-                    <div class="stat-value" id="statOrders">—</div>
-                    <div class="stat-change"><i class="ti ti-trending-up"></i> In progress</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <span class="stat-label">Total Vehicles</span>
-                        <div class="stat-icon green"><i class="ti ti-car"></i></div>
-                    </div>
-                    <div class="stat-value" id="statVehicles">—</div>
-                    <div class="stat-change"><i class="ti ti-car"></i> Registered vehicles</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <span class="stat-label">Low Stock Parts</span>
-                        <div class="stat-icon red"><i class="ti ti-alert-triangle"></i></div>
-                    </div>
-                    <div class="stat-value" id="statLowStock">—</div>
-                    <div class="stat-change down"><i class="ti ti-alert-triangle"></i> Needs attention</div>
-                </div>
+                <div class="stat-card"><div class="stat-top"><span class="stat-label">Total Customers</span><div class="stat-icon si-purple"><i class="ti ti-users"></i></div></div><div class="stat-value" id="statCustomers">—</div><div class="stat-change"><i class="ti ti-users"></i> Registered customers</div></div>
+                <div class="stat-card"><div class="stat-top"><span class="stat-label">Active Orders</span><div class="stat-icon si-amber"><i class="ti ti-clipboard-list"></i></div></div><div class="stat-value" id="statOrders">—</div><div class="stat-change"><i class="ti ti-trending-up"></i> In progress</div></div>
+                <div class="stat-card"><div class="stat-top"><span class="stat-label">Total Vehicles</span><div class="stat-icon si-green"><i class="ti ti-car"></i></div></div><div class="stat-value" id="statVehicles">—</div><div class="stat-change"><i class="ti ti-car"></i> Registered vehicles</div></div>
+                <div class="stat-card"><div class="stat-top"><span class="stat-label">Low Stock Parts</span><div class="stat-icon si-red"><i class="ti ti-alert-triangle"></i></div></div><div class="stat-value" id="statLowStock">—</div><div class="stat-change down"><i class="ti ti-alert-triangle"></i> Needs attention</div></div>
             </div>
-
-            <!-- Charts -->
             <div class="charts-row">
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Orders by status</div>
-                            <div class="card-sub">Current distribution</div>
-                        </div>
-                    </div>
-                    <div class="chart-wrap">
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Order status</div>
-                            <div class="card-sub">Summary</div>
-                        </div>
-                    </div>
-                    <div class="donut-wrap">
-                        <canvas id="donutChart" width="120" height="120" style="max-width:120px"></canvas>
-                        <div class="donut-legend" id="donutLegend"></div>
-                    </div>
-                </div>
+                <div class="card"><div class="card-header"><div><div class="card-title">Orders by status</div><div class="card-sub">Current distribution</div></div></div><div class="chart-wrap"><canvas id="barChart"></canvas></div></div>
+                <div class="card"><div class="card-header"><div><div class="card-title">Order status</div><div class="card-sub">Summary</div></div></div><div class="donut-wrap"><canvas id="donutChart" width="120" height="120" style="max-width:120px"></canvas><div class="legend" id="donutLegend"></div></div></div>
             </div>
-
-            <!-- Table -->
             <div class="table-card">
-                <div class="table-header">
-                    <div>
-                        <div class="card-title">Recent service orders</div>
-                    </div>
-                    <a href="pages/service-orders.html" class="btn-sm">View all</a>
-                </div>
+                <div class="table-header"><div class="card-title">Recent service orders</div><a href="pages/service-orders.html" class="btn-sm">View all</a></div>
                 <div style="overflow-x:auto">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Vehicle</th>
-                                <th>Service</th>
-                                <th>Mechanic</th>
-                                <th>Created</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ordersTableBody">
-                            <tr><td colspan="6" style="text-align:center;padding:24px;color:#9ca3af">Loading...</td></tr>
-                        </tbody>
+                        <thead><tr><th>#</th><th>Vehicle</th><th>Service</th><th>Mechanic</th><th>Created</th><th>Status</th></tr></thead>
+                        <tbody id="ordersTableBody"><tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa">Loading...</td></tr></tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
-
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/Dashboard.js"></script>
+</div>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/Dashboard.js"></script>
 </body>
 </html>
