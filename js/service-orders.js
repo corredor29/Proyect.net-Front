@@ -88,14 +88,14 @@ async function loadCatalogs() {
 
         // ── Appointments ───────────────────────
         try {
-            const appts = await api.get('/appointments?pageSize=100');
+            const appts = await api.get('/appointments?pageNumber=1&pageSize=100');
             const raw   = appts?.data ?? appts;
             const items = Array.isArray(raw) ? raw : (raw?.items ?? []);
             const sel   = document.getElementById('fAppointment');
             sel.innerHTML = '<option value="">No appointment</option>';
             items.forEach(a => {
-                const date     = a.scheduledAt ? new Date(a.scheduledAt).toLocaleDateString('en-US') : '';
-                const customer = a.customerName || a.customer?.name || '';
+                const date     = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('en-US') : '';
+                const customer = a.customerName || '';
                 const label    = `#${a.id}${customer ? ' — ' + customer : ''}${date ? ' — ' + date : ''}`;
                 sel.innerHTML += `<option value="${a.id}">${label}</option>`;
             });
@@ -160,7 +160,11 @@ async function loadOrders(page = 1) {
                 <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${o.notes || ''}">${o.notes || '—'}</td>
                 <td>
                     <div class="action-btns">
-                        <button class="action-btn" title="Edit" onclick="editOrder(${o.id})"><i class="ti ti-edit"></i></button>
+                        <button class="action-btn" title="Edit"
+                            onclick="editOrder(${o.id})"
+                            ${o.closedAt ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>
+                            <i class="ti ti-edit"></i>
+                        </button>
                         <button class="action-btn danger" title="Delete" onclick="deleteOrder(${o.id})"><i class="ti ti-trash"></i></button>
                     </div>
                 </td>
@@ -224,6 +228,12 @@ async function editOrder(id) {
     try {
         const res = await api.get(`/serviceorders/${id}`);
         const o   = res?.data ?? res;
+
+        if (o.closedAt) {
+            alert('This service order is closed and cannot be edited.');
+            return;
+        }
+
         editingId = id;
         document.getElementById('fVehicle').value       = o.vehicleId     || '';
         document.getElementById('fServiceType').value   = o.serviceTypeId  || '';
@@ -268,25 +278,40 @@ document.getElementById('btnSave').addEventListener('click', async () => {
     const estDelivery   = document.getElementById('fEstimatedDelivery').value;
     const appointmentId = parseInt(document.getElementById('fAppointment').value) || null;
 
-    const body = {
-        vehicleId,
-        serviceTypeId,
-        mechanicId,
-        orderStatusId:       statusId,
-        estimatedDeliveryAt: estDelivery ? new Date(estDelivery).toISOString() : null,
-        workPerformed:       document.getElementById('fWorkPerformed').value.trim() || null,
-        notes:               document.getElementById('fNotes').value.trim()         || null,
-        appointmentId
-    };
-
     try {
         if (editingId) {
-            await api.put(`/serviceorders/${editingId}`, body);
+            // 1. Cambiar status primero
+            await api.put(`/serviceorders/${editingId}/status`, {
+                orderStatusId: statusId
+            });
+
+            // 2. Actualizar contenido (puede fallar si ya cerrada, se ignora)
+            try {
+                await api.put(`/serviceorders/${editingId}`, {
+                    workPerformed:       document.getElementById('fWorkPerformed').value.trim() || null,
+                    notes:               document.getElementById('fNotes').value.trim()         || null,
+                    estimatedDeliveryAt: estDelivery ? new Date(estDelivery).toISOString() : null
+                });
+            } catch(updateErr) {
+                console.warn('Could not update order content:', updateErr.message);
+            }
+
         } else {
-            await api.post('/serviceorders', body);
+            await api.post('/serviceorders', {
+                vehicleId,
+                serviceTypeId,
+                mechanicId,
+                orderStatusId:       statusId,
+                estimatedDeliveryAt: estDelivery ? new Date(estDelivery).toISOString() : null,
+                workPerformed:       document.getElementById('fWorkPerformed').value.trim() || null,
+                notes:               document.getElementById('fNotes').value.trim()         || null,
+                appointmentId
+            });
         }
+
         closeModal();
         loadOrders(currentPage);
+
     } catch(e) {
         alertEl.textContent   = e.message || 'Error saving order.';
         alertEl.style.display = 'block';

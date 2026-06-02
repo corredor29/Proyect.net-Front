@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoTallerManager — Quotations</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" href="../css/quotations.css">
+</head>
+<body class="light">
+<div class="app">
+    <aside class="sidebar">
+        <div class="sb-logo">
+            <div class="sb-logo-icon"><i class="ti ti-car"></i></div>
+            <div class="sb-logo-name">AutoTaller<span>Management System</span></div>
+        </div>
+        <div class="sb-section">Main</div>
+        <a href="../dashboard.html" class="sb-item"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+        <a href="customers.html" class="sb-item"><i class="ti ti-users"></i> Customers</a>
+        <a href="vehicles.html" class="sb-item"><i class="ti ti-car"></i> Vehicles</a>
+        <div class="sb-section">Operations</div>
+        <a href="service-orders.html" class="sb-item"><i class="ti ti-clipboard-list"></i> Service Orders</a>
+        <a href="appointments.html" class="sb-item"><i class="ti ti-calendar"></i> Appointments</a>
+        <a href="quotations.html" class="sb-item active"><i class="ti ti-file-invoice"></i> Quotations</a>
+        <div class="sb-section">Finance</div>
+        <a href="invoices.html" class="sb-item"><i class="ti ti-receipt"></i> Invoices</a>
+        <a href="suppliers.html" class="sb-item"><i class="ti ti-building-store"></i> Suppliers</a>
+        <a href="parts.html" class="sb-item"><i class="ti ti-tools"></i> Parts</a>
+        <div class="sb-section">System</div>
+        <a href="users.html" class="sb-item"><i class="ti ti-user-cog"></i> Users</a>
+        <a href="audit-logs.html" class="sb-item"><i class="ti ti-history"></i> Audit Logs</a>
+        <div class="sb-bottom">
+            <div class="sb-user">
+                <div class="sb-avatar" id="sbAvatar">SA</div>
+                <div>
+                    <div class="sb-user-name" id="sbUserName">Loading...</div>
+                    <div class="sb-user-role" id="sbUserRole">---</div>
+                </div>
+                <i class="ti ti-logout" style="margin-left:auto;font-size:15px;color:#aaa" id="logoutBtn"></i>
+            </div>
+        </div>
+    </aside>
+    <div class="main">
+        <nav class="navbar">
+            <span class="nav-title">Quotations</span>
+            <div class="nav-search"><i class="ti ti-search"></i><input type="text" id="globalSearch" placeholder="Search quotations..."/></div>
+            <button class="theme-toggle" id="themeBtn"><i class="ti ti-moon" id="themeIcon"></i><span id="themeLabel">Dark</span></button>
+            <div class="nav-btn"><i class="ti ti-bell"></i></div>
+        </nav>
+        <div class="content">
+            <div class="page-header">
+                <div><h1>Quotations</h1><p>Manage service quotations</p></div>
+                <button class="btn-primary" id="btnNew"><i class="ti ti-plus"></i> New Quotation</button>
+            </div>
+            <div class="filters">
+                <select class="filter-input" id="filterStatus" style="width:160px">
+                    <option value="">All statuses</option>
+                </select>
+                <select class="filter-input" id="filterOrder" style="width:200px">
+                    <option value="">All service orders</option>
+                </select>
+                <button class="btn-filter" id="btnFilter"><i class="ti ti-filter"></i> Filter</button>
+                <button class="btn-filter" id="btnClear"><i class="ti ti-x"></i> Clear</button>
+            </div>
+            <div class="table-card">
+                <div class="table-header">
+                    <span class="table-title">Quotations</span>
+                    <span class="table-count" id="tableCount">Loading...</span>
+                </div>
+                <div style="overflow-x:auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Service Order</th>
+                                <th>Created By</th>
+                                <th>Labor Cost</th>
+                                <th>Subtotal</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="10" style="text-align:center;padding:32px;color:#aaa">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <span class="pg-info" id="pgInfo">Page 1</span>
+                    <button class="pg-btn" id="pgPrev"><i class="ti ti-chevron-left"></i></button>
+                    <div id="pgNumbers" style="display:flex;gap:4px"></div>
+                    <button class="pg-btn" id="pgNext"><i class="ti ti-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title" id="modalTitle">New Quotation</span>
+            <button class="modal-close" id="modalClose"><i class="ti ti-x"></i></button>
+        </div>
+        <div id="modalAlert" class="alert alert-error"></div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Service Order</label>
+                <select id="fOrder"></select>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="fStatus"></select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Labor Cost (COP)</label>
+                <input type="number" id="fLaborCost" placeholder="0" min="0" step="1000"/>
+            </div>
+            <div class="form-group">
+                <label>Subtotal (COP)</label>
+                <input type="number" id="fSubtotal" placeholder="0" min="0" step="1000"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Total (COP)</label>
+            <input type="number" id="fTotal" placeholder="0" min="0" step="1000" readonly style="opacity:0.7"/>
+        </div>
+        <div class="total-box">
+            <span>Calculated Total</span>
+            <strong id="calculatedTotal">$0</strong>
+        </div>
+        <div class="form-group">
+            <label>Notes</label>
+            <textarea id="fNotes" placeholder="Additional notes..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" id="btnCancel">Cancel</button>
+            <button class="btn-primary" id="btnSave"><i class="ti ti-check"></i> Save</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/quotations.js"></script>
+</body>
+</html>

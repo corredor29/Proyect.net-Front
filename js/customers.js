@@ -175,7 +175,8 @@ document.getElementById('btnNewCustomer').addEventListener('click', () => {
 // ── View customer ──────────────────────────────
 async function viewCustomer(id) {
     try {
-        const c = await api.get(`/customers/${id}`);
+        const res = await api.get(`/customers/${id}`);
+        const c   = res?.data ?? res;
         const name = `${c.firstName || ''} ${c.lastName || ''}`.trim();
         alert(`Customer: ${name}\nEmail: ${c.primaryEmail || '—'}\nPhone: ${c.primaryPhone || '—'}\nDocument: ${c.primaryDocument || '—'}\nStatus: ${c.isActive ? 'Active' : 'Inactive'}`);
     } catch(e) { alert('Error loading customer details'); }
@@ -184,7 +185,8 @@ async function viewCustomer(id) {
 // ── Edit customer ──────────────────────────────
 async function editCustomer(id) {
     try {
-        const c = await api.get(`/customers/${id}`);
+        const res = await api.get(`/customers/${id}`);
+        const c   = res?.data ?? res;
         editingId = id;
         document.getElementById('fFirstName').value = c.firstName || c.person?.firstName || '';
         document.getElementById('fLastName').value  = c.lastName  || c.person?.lastName  || '';
