@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Limit Exceeded — AutoTallerManager</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" href="css/rate-limit.css">
+</head>
+<body>
+    <div class="container">
+        <div class="icon-wrap">
+            <i class="ti ti-shield-off"></i>
+        </div>
+
+        <div class="badge">
+            <i class="ti ti-alert-triangle"></i>
+            HTTP 429 — Too Many Requests
+        </div>
+
+        <h1>Rate Limit Exceeded</h1>
+        <p>You've made too many requests in a short period of time.</p>
+        <p>The limit is <strong style="color:#fff">30 requests per minute</strong> for this endpoint.</p>
+
+        <div class="countdown-wrap">
+            <div class="countdown-label">Try again in</div>
+            <div class="countdown-timer" id="timer">60</div>
+            <div class="countdown-unit">seconds</div>
+        </div>
+
+        <br/>
+        <button class="btn-back" id="btnBack" disabled onclick="goBack()">
+            <i class="ti ti-arrow-left"></i>
+            Go Back
+        </button>
+    </div>
+    <script src="js/rate-limit.js"></script>
+
+</body>
+</html>
