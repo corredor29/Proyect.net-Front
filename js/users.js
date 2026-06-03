@@ -30,6 +30,15 @@ let currentPage = 1;
 let totalPages  = 1;
 let allUsers    = [];
 
+// ── SweetAlert2 theme ──────────────────────────
+function swalOpts() {
+    const dark = document.body.classList.contains('dark');
+    return {
+        background: dark ? '#111' : '#fff',
+        color:      dark ? '#fff' : '#111',
+    };
+}
+
 // ── Role badge ─────────────────────────────────
 function roleBadge(role) {
     const r = (role || '').toLowerCase();
@@ -59,9 +68,9 @@ function applyFiltersAndRender() {
     const status = document.getElementById('filterStatus').value;
 
     let filtered = allUsers;
-    if (name)        filtered = filtered.filter(u =>
+    if (name)   filtered = filtered.filter(u =>
         `${u.firstName||''} ${u.lastName||''}`.toLowerCase().includes(name));
-    if (role)        filtered = filtered.filter(u =>
+    if (role)   filtered = filtered.filter(u =>
         u.roles?.some(r => r.toLowerCase() === role.toLowerCase()));
     if (status !== '') filtered = filtered.filter(u => String(u.isActive) === status);
 
@@ -92,16 +101,14 @@ function applyFiltersAndRender() {
             <td>
                 <div class="user-cell">
                     <div class="user-avatar">${initials}</div>
-                    <div>
-                        <div class="user-name">${name}</div>
-                    </div>
+                    <div><div class="user-name">${name}</div></div>
                 </div>
             </td>
             <td>${roles || '—'}</td>
             <td><span class="${u.isActive ? 'badge-active' : 'badge-inactive'}">${u.isActive ? 'Active' : 'Inactive'}</span></td>
             <td>
                 <div class="action-btns">
-                    <button class="action-btn danger" title="Deactivate" onclick="toggleUser(${u.id}, ${u.isActive})">
+                    <button class="action-btn danger" title="${u.isActive ? 'Deactivate' : 'Activate'}" onclick="toggleUser(${u.id}, ${u.isActive}, '${name}')">
                         <i class="ti ti-${u.isActive ? 'user-off' : 'user-check'}"></i>
                     </button>
                 </div>
@@ -143,19 +150,50 @@ document.getElementById('globalSearch').addEventListener('keyup', e => {
 });
 
 // ── Toggle user active ─────────────────────────
-async function toggleUser(id, isActive) {
-    const action = isActive ? 'deactivate' : 'activate';
-    if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+async function toggleUser(id, isActive, name) {
+    const action      = isActive ? 'deactivate' : 'activate';
+    const actionLabel = isActive ? 'Deactivate' : 'Activate';
+    const icon        = isActive ? 'warning' : 'question';
+    const btnColor    = isActive ? '#dc2626' : '#16a34a';
+
+    const result = await Swal.fire({
+        title:              `${actionLabel} user?`,
+        text:               `Are you sure you want to ${action} "${name}"?`,
+        icon,
+        showCancelButton:   true,
+        confirmButtonColor: btnColor,
+        cancelButtonColor:  document.body.classList.contains('dark') ? '#333' : '#6b7280',
+        confirmButtonText:  `Yes, ${action}`,
+        cancelButtonText:   'Cancel',
+        ...swalOpts()
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
         await api.put(`/users/${id}/${action}`);
         await loadUsers();
+        Swal.fire({
+            icon: 'success',
+            title: `User ${action}d!`,
+            text: `"${name}" has been ${action}d.`,
+            timer: 2000,
+            showConfirmButton: false,
+            ...swalOpts()
+        });
     } catch(e) {
-        // Try alternate endpoint
         try {
             await api.patch(`/users/${id}`, { isActive: !isActive });
             await loadUsers();
+            Swal.fire({
+                icon: 'success',
+                title: `User ${action}d!`,
+                timer: 2000,
+                showConfirmButton: false,
+                ...swalOpts()
+            });
         } catch(e2) {
-            alert(`Error: ${e2.message}`);
+            Swal.fire({ icon: 'error', title: 'Error', text: e2.message, confirmButtonColor: '#4F46E5', ...swalOpts() });
         }
     }
 }
@@ -199,6 +237,12 @@ document.getElementById('btnSave').addEventListener('click', async () => {
         await api.post('/auth/register', { firstName, lastName, email, password, role });
         closeModal();
         await loadUsers();
+        Swal.fire({
+            icon: 'success', title: 'User created!',
+            text: `${firstName} ${lastName} has been registered.`,
+            timer: 2000, showConfirmButton: false,
+            ...swalOpts()
+        });
     } catch(e) {
         alertEl.textContent   = e.message || 'Error creating user.';
         alertEl.style.display = 'block';

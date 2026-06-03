@@ -6,11 +6,11 @@
     <title>AutoTallerManager — Customers</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <link rel="stylesheet" href="../css/customers.css">
+    <link rel="stylesheet" href="../css/notifications.css">
 </head>
 <body class="light">
 <div class="app">
 
-    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sb-logo">
             <div class="sb-logo-icon"><i class="ti ti-car"></i></div>
@@ -43,14 +43,28 @@
         </div>
     </aside>
 
-    <!-- Main -->
     <div class="main">
         <nav class="navbar">
             <span class="nav-title">Customers</span>
             <div class="nav-search"><i class="ti ti-search"></i><input type="text" id="globalSearch" placeholder="Search customers..."/></div>
             <button class="theme-toggle" id="themeBtn"><i class="ti ti-moon" id="themeIcon"></i><span id="themeLabel">Dark</span></button>
-            <div class="nav-btn"><i class="ti ti-bell"></i></div>
+            <div class="nav-btn notif-btn" id="notifBtn" onclick="togglePanel()">
+                <i class="ti ti-bell"></i>
+                <span class="notif-badge" id="notifBadge"></span>
+            </div>
         </nav>
+
+        <!-- Notification Panel -->
+        <div class="notif-panel" id="notifPanel">
+            <div class="notif-panel-header">
+                <span class="notif-panel-title">Notifications</span>
+                <div class="notif-panel-actions">
+                    <button class="notif-action-btn" onclick="markAllRead()">Mark all read</button>
+                    <button class="notif-action-btn" onclick="clearAll()">Clear</button>
+                </div>
+            </div>
+            <div class="notif-list" id="notifList"></div>
+        </div>
 
         <div class="content">
             <div class="page-header">
@@ -103,7 +117,7 @@
     </div>
 </div>
 
-<!-- Modal Create/Edit Customer -->
+<!-- Modal -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <div class="modal-header">
@@ -150,11 +164,12 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../js/api.js"></script>
 <script src="../js/auth.js"></script>
+<script src="../js/notifications.js"></script>
 <script src="../js/customers.js"></script>
-
-
-</script>
+<script>initNotifications();</script>
 </body>
 </html>

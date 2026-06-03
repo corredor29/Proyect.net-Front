@@ -11,7 +11,7 @@ document.getElementById('themeBtn').addEventListener('click', () => {
     updateThemeBtn(newTheme);
 });
 function updateThemeBtn(theme) {
-    document.getElementById('themeIcon').className  = theme === 'dark' ? 'ti ti-sun' : 'ti ti-moon';
+    document.getElementById('themeIcon').className    = theme === 'dark' ? 'ti ti-sun' : 'ti ti-moon';
     document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Light' : 'Dark';
 }
 
@@ -26,12 +26,22 @@ if (user) {
 document.getElementById('logoutBtn').addEventListener('click', logout);
 
 // ── State ──────────────────────────────────────
-let currentPage  = 1;
-let totalPages   = 1;
-let totalCount   = 0;
-const pageSize   = 10;
-let editingId    = null;
+let currentPage   = 1;
+let totalPages    = 1;
+const pageSize    = 10;
+let editingId     = null;
 let documentTypes = [];
+
+// ── SweetAlert2 theme helper ───────────────────
+function swalTheme() {
+    const dark = document.body.classList.contains('dark');
+    return {
+        background:    dark ? '#111'    : '#fff',
+        color:         dark ? '#fff'    : '#111',
+        confirmButtonColor: '#4F46E5',
+        cancelButtonColor:  dark ? '#333' : '#e5e7eb',
+    };
+}
 
 // ── Load document types ────────────────────────
 async function loadDocumentTypes() {
@@ -49,9 +59,9 @@ async function loadDocumentTypes() {
 // ── Load customers ─────────────────────────────
 async function loadCustomers(page = 1) {
     currentPage = page;
-    const firstName  = document.getElementById('filterName').value.trim();
-    const docNumber  = document.getElementById('filterDocument').value.trim();
-    const isActive   = document.getElementById('filterStatus').value;
+    const firstName = document.getElementById('filterName').value.trim();
+    const docNumber = document.getElementById('filterDocument').value.trim();
+    const isActive  = document.getElementById('filterStatus').value;
 
     let url = `/customers?pageNumber=${page}&pageSize=${pageSize}`;
     if (firstName) url += `&firstName=${encodeURIComponent(firstName)}`;
@@ -62,16 +72,14 @@ async function loadCustomers(page = 1) {
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:#aaa">Loading...</td></tr>`;
 
     try {
-        const response = await api.get(url);
-        const data     = response?.data ?? response;
-        const items    = data?.items ?? [];
-        console.log('First item:', items[0]); // ← agrega esto
+        const response   = await api.get(url);
+        const data       = response?.data ?? response;
+        const items      = data?.items ?? [];
         const totalCount = data?.totalCount ?? 0;
-        totalPages  = Math.ceil(totalCount / pageSize) || 1;
+        totalPages = Math.ceil(totalCount / pageSize) || 1;
 
         document.getElementById('tableCount').textContent = `${totalCount} customer${totalCount !== 1 ? 's' : ''} found`;
-        document.getElementById('pgInfo').textContent = `Page ${currentPage} of ${totalPages}`;
-
+        document.getElementById('pgInfo').textContent     = `Page ${currentPage} of ${totalPages}`;
         renderPagination();
 
         if (items.length === 0) {
@@ -81,7 +89,7 @@ async function loadCustomers(page = 1) {
 
         tbody.innerHTML = items.map(c => {
             const name     = `${c.firstName || c.person?.firstName || ''} ${c.lastName || c.person?.lastName || ''}`.trim() || '—';
-            const initials = (name.split(' ').map(n=>n[0]||'').join('').toUpperCase()).substring(0,2) || '?';
+            const initials = name.split(' ').map(n=>n[0]||'').join('').toUpperCase().substring(0,2) || '?';
             const email    = c.primaryEmail || c.email || '—';
             const phone    = c.primaryPhone || c.phone || '—';
             const doc      = c.primaryDocument || c.document || '—';
@@ -103,8 +111,8 @@ async function loadCustomers(page = 1) {
                 <td><span class="${active ? 'badge-active' : 'badge-inactive'}">${active ? 'Active' : 'Inactive'}</span></td>
                 <td>
                     <div class="action-btns">
-                        <button class="action-btn" title="View" onclick="viewCustomer(${c.id})"><i class="ti ti-eye"></i></button>
-                        <button class="action-btn" title="Edit" onclick="editCustomer(${c.id})"><i class="ti ti-edit"></i></button>
+                        <button class="action-btn" title="View"   onclick="viewCustomer(${c.id})"><i class="ti ti-eye"></i></button>
+                        <button class="action-btn" title="Edit"   onclick="editCustomer(${c.id})"><i class="ti ti-edit"></i></button>
                         <button class="action-btn danger" title="Delete" onclick="deleteCustomer(${c.id}, '${name}')"><i class="ti ti-trash"></i></button>
                     </div>
                 </td>
@@ -112,7 +120,7 @@ async function loadCustomers(page = 1) {
         }).join('');
 
     } catch(err) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:#dc2626">Error loading customers: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:#dc2626">Error: ${err.message}</td></tr>`;
     }
 }
 
@@ -147,39 +155,48 @@ document.getElementById('globalSearch').addEventListener('keyup', e => {
 
 // ── Modal ──────────────────────────────────────
 function openModal(title) {
-    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalTitle').textContent   = title;
     document.getElementById('modalAlert').style.display = 'none';
     document.getElementById('modalOverlay').classList.add('show');
 }
 
 function closeModal() {
     document.getElementById('modalOverlay').classList.remove('show');
-    document.getElementById('fFirstName').value      = '';
-    document.getElementById('fLastName').value       = '';
-    document.getElementById('fDocumentType').value   = '';
-    document.getElementById('fDocumentNumber').value = '';
-    document.getElementById('fEmail').value          = '';
-    document.getElementById('fPhone').value          = '';
+    ['fFirstName','fLastName','fDocumentType','fDocumentNumber','fEmail','fPhone']
+        .forEach(id => { document.getElementById(id).value = ''; });
     editingId = null;
 }
 
 document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('btnCancel').addEventListener('click', closeModal);
 document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
-
-document.getElementById('btnNewCustomer').addEventListener('click', () => {
-    editingId = null;
-    openModal('New Customer');
-});
+document.getElementById('btnNewCustomer').addEventListener('click', () => { editingId = null; openModal('New Customer'); });
 
 // ── View customer ──────────────────────────────
 async function viewCustomer(id) {
     try {
-        const res = await api.get(`/customers/${id}`);
-        const c   = res?.data ?? res;
+        const res  = await api.get(`/customers/${id}`);
+        const c    = res?.data ?? res;
         const name = `${c.firstName || ''} ${c.lastName || ''}`.trim();
-        alert(`Customer: ${name}\nEmail: ${c.primaryEmail || '—'}\nPhone: ${c.primaryPhone || '—'}\nDocument: ${c.primaryDocument || '—'}\nStatus: ${c.isActive ? 'Active' : 'Inactive'}`);
-    } catch(e) { alert('Error loading customer details'); }
+
+        Swal.fire({
+            title: `<strong>${name}</strong>`,
+            html: `
+                <div style="text-align:left;font-size:13px;line-height:2.2;padding:4px 0">
+                    <div><i class="ti ti-mail" style="margin-right:6px;color:#4F46E5"></i><b>Email:</b> ${c.primaryEmail || '—'}</div>
+                    <div><i class="ti ti-phone" style="margin-right:6px;color:#4F46E5"></i><b>Phone:</b> ${c.primaryPhone || '—'}</div>
+                    <div><i class="ti ti-id" style="margin-right:6px;color:#4F46E5"></i><b>Document:</b> ${c.primaryDocument || '—'}</div>
+                    <div><i class="ti ti-circle-check" style="margin-right:6px;color:#4F46E5"></i><b>Status:</b> ${c.isActive ? '<span style="color:#16a34a">Active</span>' : '<span style="color:#dc2626">Inactive</span>'}</div>
+                </div>
+            `,
+            confirmButtonText:  'Close',
+            confirmButtonColor: '#4F46E5',
+            background:  document.body.classList.contains('dark') ? '#111' : '#fff',
+            color:       document.body.classList.contains('dark') ? '#fff' : '#111',
+        });
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Could not load customer details.', confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Edit customer ──────────────────────────────
@@ -193,16 +210,41 @@ async function editCustomer(id) {
         document.getElementById('fEmail').value     = c.primaryEmail || '';
         document.getElementById('fPhone').value     = c.primaryPhone || '';
         openModal('Edit Customer');
-    } catch(e) { alert('Error loading customer'); }
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Could not load customer.', confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Delete customer ────────────────────────────
 async function deleteCustomer(id, name) {
-    if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+    const result = await Swal.fire({
+        title:              'Delete customer?',
+        text:               `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+        icon:               'warning',
+        showCancelButton:   true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor:  document.body.classList.contains('dark') ? '#333' : '#6b7280',
+        confirmButtonText:  'Yes, delete',
+        cancelButtonText:   'Cancel',
+        background:  document.body.classList.contains('dark') ? '#111' : '#fff',
+        color:       document.body.classList.contains('dark') ? '#fff' : '#111',
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
         await api.delete(`/customers/${id}`);
         loadCustomers(currentPage);
-    } catch(e) { alert(`Error deleting customer: ${e.message}`); }
+        Swal.fire({
+            icon: 'success', title: 'Deleted!',
+            text: `"${name}" has been deleted.`,
+            timer: 2000, showConfirmButton: false,
+            background: document.body.classList.contains('dark') ? '#111' : '#fff',
+            color:      document.body.classList.contains('dark') ? '#fff' : '#111',
+        });
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Save customer ──────────────────────────────
@@ -216,8 +258,8 @@ document.getElementById('btnSave').addEventListener('click', async () => {
     const alertEl        = document.getElementById('modalAlert');
 
     if (!firstName || !lastName) {
-        alertEl.textContent    = 'First name and last name are required.';
-        alertEl.style.display  = 'block';
+        alertEl.textContent   = 'First name and last name are required.';
+        alertEl.style.display = 'block';
         return;
     }
 
@@ -244,6 +286,5 @@ document.getElementById('btnSave').addEventListener('click', async () => {
     }
 });
 
-// ── Init ───────────────────────────────────────
 loadDocumentTypes();
 loadCustomers(1);

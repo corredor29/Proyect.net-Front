@@ -6,6 +6,7 @@
     <title>AutoTallerManager — Invoices</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <link rel="stylesheet" href="../css/invoices.css">
+    <link rel="stylesheet" href="../css/notifications.css">
 </head>
 <body class="light">
 <div class="app">
@@ -45,8 +46,24 @@
             <span class="nav-title">Invoices</span>
             <div class="nav-search"><i class="ti ti-search"></i><input type="text" id="globalSearch" placeholder="Search invoices..."/></div>
             <button class="theme-toggle" id="themeBtn"><i class="ti ti-moon" id="themeIcon"></i><span id="themeLabel">Dark</span></button>
-            <div class="nav-btn"><i class="ti ti-bell"></i></div>
+            <div class="nav-btn notif-btn" id="notifBtn" onclick="togglePanel()">
+                <i class="ti ti-bell"></i>
+                <span class="notif-badge" id="notifBadge"></span>
+            </div>
         </nav>
+
+        <!-- Notification Panel -->
+        <div class="notif-panel" id="notifPanel">
+            <div class="notif-panel-header">
+                <span class="notif-panel-title">Notifications</span>
+                <div class="notif-panel-actions">
+                    <button class="notif-action-btn" onclick="markAllRead()">Mark all read</button>
+                    <button class="notif-action-btn" onclick="clearAll()">Clear</button>
+                </div>
+            </div>
+            <div class="notif-list" id="notifList"></div>
+        </div>
+
         <div class="content">
             <div class="page-header">
                 <div><h1>Invoices</h1><p>Manage service invoices</p></div>
@@ -128,7 +145,7 @@
                 <input type="number" id="fLaborCost" placeholder="0" min="0" step="1000"/>
             </div>
             <div class="form-group">
-                <label>Tax % </label>
+                <label>Tax %</label>
                 <input type="number" id="fTaxPct" placeholder="19" min="0" max="100" value="19"/>
             </div>
         </div>
@@ -148,8 +165,11 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
 <script src="../js/api.js"></script>
 <script src="../js/auth.js"></script>
+<script src="../js/notifications.js"></script>
 <script src="../js/invoices.js"></script>
+<script>initNotifications();</script>
 </body>
 </html>
