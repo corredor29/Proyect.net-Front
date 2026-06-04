@@ -1,4 +1,4 @@
-const API_BASE = 'https://autotallermanager-proyectnet.onrender.com';
+const API_BASE = 'https://autotallermanager-proyectnet.onrender.com/api';
 
 async function apiFetch(endpoint, options = {}) {
     const token = localStorage.getItem('token');
