@@ -16,46 +16,49 @@ async function apiFetch(endpoint, options = {}) {
 
     if (response.status === 401) {
         logout?.();
-        return;
+        return null;
     }
+
     if (response.status === 429) {
-        const retryAfter  = response.headers.get('Retry-After') || '60';
-        const currentPage = encodeURIComponent(window.location.href);
-        
-        const isInPages = window.location.pathname.includes('/pages/');
-        const rateLimitUrl = isInPages 
+        const retryAfter   = response.headers.get('Retry-After') || '60';
+        const currentPage  = encodeURIComponent(window.location.href);
+        const isInPages    = window.location.pathname.includes('/pages/');
+        const rateLimitUrl = isInPages
             ? `../rate-limit.html?retry=${retryAfter}&from=${currentPage}`
             : `rate-limit.html?retry=${retryAfter}&from=${currentPage}`;
-        
         window.location.href = rateLimitUrl;
-        return;
+        return null;
     }
 
     if (!response.ok) {
         let errorMessage = `HTTP ${response.status}`;
         try {
-            const error = await response.json();
-            errorMessage = error.Detail
-                || error.detail
-                || error.message
-                || error.Message
-                || error.title
-                || error.Title
-                || errorMessage;
+            const text = await response.text();
+            if (text) {
+                const error = JSON.parse(text);
+                errorMessage = error.Detail
+                    || error.detail
+                    || error.message
+                    || error.Message
+                    || error.title
+                    || error.Title
+                    || errorMessage;
+            }
         } catch { }
-
         throw new Error(errorMessage);
     }
 
     if (response.status === 204) return null;
 
     const text = await response.text();
-    if (!text) return null;
+    if (!text || text.trim() === '') return null;
+
     try {
         return JSON.parse(text);
     } catch {
         return null;
-    }}
+    }
+}
 
 const api = {
     get:    (url)       => apiFetch(url),
