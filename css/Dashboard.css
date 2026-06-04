@@ -80,3 +80,4 @@
         body.dark .b-cancelled { background: #1c0707; color: #f87171; }
         @media (max-width:1100px) { .stats-grid { grid-template-columns: repeat(2,1fr); } .charts-row { grid-template-columns: 1fr; } }
         @media (max-width:768px)  { .sidebar { display: none; } }
+        

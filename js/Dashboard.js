@@ -23,6 +23,7 @@ if (user) {
 document.getElementById('logoutBtn').addEventListener('click', logout);
 document.getElementById('dateLabel').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
+
 let barChart, donutChart;
 const colors = ['#4F46E5','#7C3AED','#16a34a','#dc2626'];
 
