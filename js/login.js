@@ -81,22 +81,25 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Renderiza el botón oficial de Google en el contenedor
-            google.accounts.id.renderButton(
-                document.getElementById('googleSignInBtn'),
-                {
-                    theme: 'outline',
-                    size:  'large',
-                    width: 360,
-                    text:  'signin_with_google'
-                }
-            );
+            const googleSignInBtn = document.getElementById('googleSignInBtn');
+            if (googleSignInBtn) {
+                google.accounts.id.renderButton(
+                    googleSignInBtn,
+                    {
+                        theme: 'outline',
+                        size:  'large',
+                        width: 360,
+                        text:  'signin_with_google'
+                    }
+                );
+            }
         }
     });
 
     // Botón custom como fallback por si el SDK tarda en cargar
-    document
-        .getElementById('btnGoogle')
-        .addEventListener('click', () => {
+    const btnGoogle = document.getElementById('btnGoogle');
+    if (btnGoogle) {
+        btnGoogle.addEventListener('click', () => {
             if (typeof google !== 'undefined') {
                 google.accounts.id.prompt();
             } else {
@@ -104,4 +107,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorBox.style.display = 'block';
             }
         });
+    }
 });

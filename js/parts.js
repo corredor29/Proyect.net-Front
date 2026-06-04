@@ -199,7 +199,35 @@ async function editPart(id) {
         document.getElementById('fStock').value       = p.stock          || 0;
         document.getElementById('fMinStock').value    = p.minStock       || 0;
         openModal('Edit Part');
-    } catch(e) { alert('Error loading part'); }
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Could not load part.', confirmButtonColor: '#4F46E5' });
+    }
+}
+
+// ── Delete ─────────────────────────────────────
+async function deletePart(id) {
+    const result = await Swal.fire({
+        title:              'Delete part?',
+        text:               'Are you sure? This action cannot be undone.',
+        icon:               'warning',
+        showCancelButton:   true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor:  document.body.classList.contains('dark') ? '#333' : '#6b7280',
+        confirmButtonText:  'Yes, delete',
+        cancelButtonText:   'Cancel',
+        background: document.body.classList.contains('dark') ? '#111' : '#fff',
+        color:      document.body.classList.contains('dark') ? '#fff' : '#111',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+        await api.delete(`/parts/${id}`);
+        await loadParts();
+        Swal.fire({ icon: 'success', title: 'Deleted!', timer: 2000, showConfirmButton: false });
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Delete ─────────────────────────────────────

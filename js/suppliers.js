@@ -164,16 +164,35 @@ async function editSupplier(id) {
         document.getElementById('fAddress').value     = s.address      || '';
         document.getElementById('fIsActive').value    = String(s.isActive);
         openModal('Edit Supplier', true);
-    } catch(e) { alert('Error loading supplier'); }
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Could not load supplier.', confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Delete ─────────────────────────────────────
 async function deleteSupplier(id) {
-    if (!confirm('Are you sure you want to delete this supplier?')) return;
+    const result = await Swal.fire({
+        title:              'Delete supplier?',
+        text:               'Are you sure? This action cannot be undone.',
+        icon:               'warning',
+        showCancelButton:   true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor:  document.body.classList.contains('dark') ? '#333' : '#6b7280',
+        confirmButtonText:  'Yes, delete',
+        cancelButtonText:   'Cancel',
+        background: document.body.classList.contains('dark') ? '#111' : '#fff',
+        color:      document.body.classList.contains('dark') ? '#fff' : '#111',
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
         await api.delete(`/suppliers/${id}`);
         await loadSuppliers();
-    } catch(e) { alert(`Error: ${e.message}`); }
+        Swal.fire({ icon: 'success', title: 'Deleted!', timer: 2000, showConfirmButton: false });
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Save ───────────────────────────────────────

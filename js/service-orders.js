@@ -230,7 +230,13 @@ async function editOrder(id) {
         const o   = res?.data ?? res;
 
         if (o.closedAt) {
-            alert('This service order is closed and cannot be edited.');
+            Swal.fire({
+                icon: 'warning', title: 'Order closed',
+                text: 'This service order is closed and cannot be edited.',
+                confirmButtonColor: '#4F46E5',
+                background: document.body.classList.contains('dark') ? '#111' : '#fff',
+                color:      document.body.classList.contains('dark') ? '#fff' : '#111',
+            });
             return;
         }
 
@@ -247,16 +253,35 @@ async function editOrder(id) {
                 new Date(o.estimatedDeliveryAt).toISOString().slice(0, 16);
         }
         openModal('Edit Service Order');
-    } catch(e) { alert('Error loading order'); }
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Could not load order.', confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Delete order ───────────────────────────────
 async function deleteOrder(id) {
-    if (!confirm('Are you sure you want to delete this service order?')) return;
+    const result = await Swal.fire({
+        title:              'Delete service order?',
+        text:               'Are you sure? This action cannot be undone.',
+        icon:               'warning',
+        showCancelButton:   true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor:  document.body.classList.contains('dark') ? '#333' : '#6b7280',
+        confirmButtonText:  'Yes, delete',
+        cancelButtonText:   'Cancel',
+        background: document.body.classList.contains('dark') ? '#111' : '#fff',
+        color:      document.body.classList.contains('dark') ? '#fff' : '#111',
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
         await api.delete(`/serviceorders/${id}`);
         loadOrders(currentPage);
-    } catch(e) { alert(`Error: ${e.message}`); }
+        Swal.fire({ icon: 'success', title: 'Deleted!', timer: 2000, showConfirmButton: false });
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Save order ─────────────────────────────────

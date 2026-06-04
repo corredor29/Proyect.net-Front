@@ -194,17 +194,54 @@ async function viewInvoice(id) {
     try {
         const res = await api.get(`/invoices/${id}`);
         const inv = res?.data ?? res;
-        alert(`Invoice #INV-${inv.id}\nCustomer: ${inv.customerName||'—'}\nVehicle: ${inv.vehicleVin||'—'}\nLabor: ${fmtCurrency(inv.laborCost)}\nTax: ${fmtCurrency(inv.tax)}\nTotal: ${fmtCurrency(inv.total)}\nType: ${inv.diagnosisOnlyCharged ? 'Diagnosis Only' : 'Full Service'}\nIssued: ${fmtDate(inv.issuedAt)}`);
-    } catch(e) { alert('Error loading invoice'); }
+
+        Swal.fire({
+            title: `<strong>#INV-${inv.id}</strong>`,
+            html: `
+                <div style="text-align:left;font-size:13px;line-height:2.2;padding:4px 0">
+                    <div><i class="ti ti-user" style="margin-right:6px;color:#4F46E5"></i><b>Customer:</b> ${inv.customerName || '—'}</div>
+                    <div><i class="ti ti-car" style="margin-right:6px;color:#4F46E5"></i><b>Vehicle:</b> ${inv.vehicleVin || '—'}</div>
+                    <div><i class="ti ti-tools" style="margin-right:6px;color:#4F46E5"></i><b>Labor:</b> ${fmtCurrency(inv.laborCost)}</div>
+                    <div><i class="ti ti-receipt" style="margin-right:6px;color:#4F46E5"></i><b>Tax:</b> ${fmtCurrency(inv.tax)}</div>
+                    <div><i class="ti ti-cash" style="margin-right:6px;color:#4F46E5"></i><b>Total:</b> ${fmtCurrency(inv.total)}</div>
+                    <div><i class="ti ti-tag" style="margin-right:6px;color:#4F46E5"></i><b>Type:</b> ${inv.diagnosisOnlyCharged ? 'Diagnosis Only' : 'Full Service'}</div>
+                    <div><i class="ti ti-calendar" style="margin-right:6px;color:#4F46E5"></i><b>Issued:</b> ${fmtDate(inv.issuedAt)}</div>
+                </div>
+            `,
+            confirmButtonText:  'Close',
+            confirmButtonColor: '#4F46E5',
+            background: document.body.classList.contains('dark') ? '#111' : '#fff',
+            color:      document.body.classList.contains('dark') ? '#fff' : '#111',
+        });
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Could not load invoice.', confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Delete ─────────────────────────────────────
 async function deleteInvoice(id) {
-    if (!confirm('Are you sure you want to delete this invoice?')) return;
+    const result = await Swal.fire({
+        title:              'Delete invoice?',
+        text:               'Are you sure? This action cannot be undone.',
+        icon:               'warning',
+        showCancelButton:   true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor:  document.body.classList.contains('dark') ? '#333' : '#6b7280',
+        confirmButtonText:  'Yes, delete',
+        cancelButtonText:   'Cancel',
+        background: document.body.classList.contains('dark') ? '#111' : '#fff',
+        color:      document.body.classList.contains('dark') ? '#fff' : '#111',
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
         await api.delete(`/invoices/${id}`);
         loadInvoices(currentPage);
-    } catch(e) { alert(`Error: ${e.message}`); }
+        Swal.fire({ icon: 'success', title: 'Deleted!', timer: 2000, showConfirmButton: false });
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Save ───────────────────────────────────────

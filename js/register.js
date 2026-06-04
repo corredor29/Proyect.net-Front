@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const form        = document.getElementById('registerForm');
-    const errorBox    = document.getElementById('registerError');
-    const successBox  = document.getElementById('registerSuccess');
+    const form       = document.getElementById('registerForm');
+    const errorBox   = document.getElementById('registerError');
+    const successBox = document.getElementById('registerSuccess');
 
     document
         .getElementById('togglePassword')
@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     form.addEventListener('submit', async (e) => {
-
         e.preventDefault();
 
         errorBox.style.display   = 'none';
@@ -42,17 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 password
             });
 
-            // El token viene en response.data
             saveAuth(response.data.token, {
                 firstName,
                 lastName,
-                fullName:  response.data.fullName,
-                roles:     response.data.roles
+                fullName: response.data.fullName,
+                roles:    response.data.roles
             });
 
             successBox.textContent   = '¡Cuenta creada correctamente! Redirigiendo...';
             successBox.style.display = 'block';
-
             form.reset();
 
             setTimeout(() => {

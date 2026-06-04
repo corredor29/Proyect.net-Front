@@ -8,7 +8,7 @@ function initNotifications() {
     if (!token) return;
 
     notificationConnection = new signalR.HubConnectionBuilder()
-        .withUrl('http://localhost:5081/hubs/notifications', {
+        .withUrl('https://autotallermanager-proyectnet.onrender.com/hubs/notifications', {
             accessTokenFactory: () => token
         })
         .withAutomaticReconnect()

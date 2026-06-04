@@ -255,16 +255,33 @@ async function editAppointment(id) {
         if (a.appointmentDate)
             document.getElementById('fDate').value = new Date(a.appointmentDate).toISOString().slice(0,16);
         openModal('Edit Appointment');
-    } catch(e) { alert('Error loading appointment'); }
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Could not load appointment.', confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Delete ─────────────────────────────────────
 async function deleteAppointment(id) {
-    if (!confirm('Are you sure you want to delete this appointment?')) return;
+    const result = await Swal.fire({
+        title:              'Delete appointment?',
+        text:               'Are you sure? This action cannot be undone.',
+        icon:               'warning',
+        showCancelButton:   true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor:  '#6b7280',
+        confirmButtonText:  'Yes, delete',
+        cancelButtonText:   'Cancel'
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
         await api.delete(`/appointments/${id}`);
         loadAppointments(currentPage);
-    } catch(e) { alert(`Error: ${e.message}`); }
+        Swal.fire({ icon: 'success', title: 'Deleted!', timer: 2000, showConfirmButton: false });
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Save ───────────────────────────────────────

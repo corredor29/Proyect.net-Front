@@ -210,16 +210,35 @@ async function editQuotation(id) {
         document.getElementById('fNotes').value     = q.notes               || '';
         document.getElementById('calculatedTotal').textContent = '$' + Number(q.total||0).toLocaleString('es-CO');
         openModal('Edit Quotation');
-    } catch(e) { alert('Error loading quotation'); }
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Could not load quotation.', confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Delete ─────────────────────────────────────
 async function deleteQuotation(id) {
-    if (!confirm('Are you sure you want to delete this quotation?')) return;
+    const result = await Swal.fire({
+        title:              'Delete quotation?',
+        text:               'Are you sure? This action cannot be undone.',
+        icon:               'warning',
+        showCancelButton:   true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor:  document.body.classList.contains('dark') ? '#333' : '#6b7280',
+        confirmButtonText:  'Yes, delete',
+        cancelButtonText:   'Cancel',
+        background: document.body.classList.contains('dark') ? '#111' : '#fff',
+        color:      document.body.classList.contains('dark') ? '#fff' : '#111',
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
         await api.delete(`/quotations/${id}`);
         loadQuotations(currentPage);
-    } catch(e) { alert(`Error: ${e.message}`); }
+        Swal.fire({ icon: 'success', title: 'Deleted!', timer: 2000, showConfirmButton: false });
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#4F46E5' });
+    }
 }
 
 // ── Save ───────────────────────────────────────
