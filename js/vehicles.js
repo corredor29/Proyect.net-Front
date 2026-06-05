@@ -1,5 +1,7 @@
 requireAuth();
 
+const MAX_VEHICLE_YEAR = 2026;
+
 // ── Theme ──────────────────────────────────────
 const savedTheme = localStorage.getItem('theme') || 'light';
 document.body.className = savedTheme;
@@ -272,8 +274,20 @@ document.getElementById('btnSave').addEventListener('click', async () => {
         return;
     }
 
+    if (body.vin.length !== 17) {
+        alertEl.textContent   = 'VIN must be exactly 17 characters.';
+        alertEl.style.display = 'block';
+        return;
+    }
+
     if (!body.modelId) {
         alertEl.textContent   = 'Brand and Model are required.';
+        alertEl.style.display = 'block';
+        return;
+    }
+
+    if (body.year > MAX_VEHICLE_YEAR) {
+        alertEl.textContent   = `Year cannot be greater than ${MAX_VEHICLE_YEAR}.`;
         alertEl.style.display = 'block';
         return;
     }

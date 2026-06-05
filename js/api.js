@@ -1,5 +1,38 @@
 const API_BASE = 'https://autotallermanager-proyectnet.onrender.com/api';
 
+function formatFieldName(fieldName) {
+    return String(fieldName || '')
+        .replace(/\./g, ' ')
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .trim();
+}
+
+function getApiErrorMessage(error, fallbackMessage) {
+    const validationErrors = error?.Errors || error?.errors;
+    if (validationErrors && typeof validationErrors === 'object') {
+        const messages = Object.entries(validationErrors)
+            .flatMap(([field, fieldErrors]) => {
+                const items = Array.isArray(fieldErrors) ? fieldErrors : [fieldErrors];
+                const label = formatFieldName(field);
+                return items
+                    .filter(Boolean)
+                    .map(message => label ? `${label}: ${message}` : String(message));
+            });
+
+        if (messages.length > 0) {
+            return messages.join(' ');
+        }
+    }
+
+    return error?.Detail
+        || error?.detail
+        || error?.message
+        || error?.Message
+        || error?.title
+        || error?.Title
+        || fallbackMessage;
+}
+
 async function apiFetch(endpoint, options = {}) {
     const token = localStorage.getItem('token');
 
@@ -36,13 +69,7 @@ async function apiFetch(endpoint, options = {}) {
             const text = await response.text();
             if (text) {
                 const error = JSON.parse(text);
-                errorMessage = error.Detail
-                    || error.detail
-                    || error.message
-                    || error.Message
-                    || error.title
-                    || error.Title
-                    || errorMessage;
+                errorMessage = getApiErrorMessage(error, errorMessage);
             }
         } catch { }
         throw new Error(errorMessage);

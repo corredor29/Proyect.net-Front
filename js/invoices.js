@@ -17,6 +17,9 @@ function updateThemeBtn(theme) {
 
 // ── User info ──────────────────────────────────
 const user = getUser();
+const canCreateInvoices = hasRole('Admin') || hasRole('Receptionist');
+const canDeleteInvoices = hasRole('Admin');
+
 if (user) {
     const initials = ((user.firstName?.[0]||'')+(user.lastName?.[0]||'')).toUpperCase()||'U';
     document.getElementById('sbAvatar').textContent   = initials;
@@ -24,6 +27,10 @@ if (user) {
     document.getElementById('sbUserRole').textContent = user.roles?.[0] || 'User';
 }
 document.getElementById('logoutBtn').addEventListener('click', logout);
+
+if (!canCreateInvoices) {
+    document.getElementById('btnNew').style.display = 'none';
+}
 
 let currentPage = 1;
 let totalPages  = 1;
@@ -131,7 +138,9 @@ async function loadInvoices(page = 1) {
                 <td>
                     <div class="action-btns">
                         <button class="action-btn" title="View" onclick="viewInvoice(${inv.id})"><i class="ti ti-eye"></i></button>
-                        <button class="action-btn danger" title="Delete" onclick="deleteInvoice(${inv.id})"><i class="ti ti-trash"></i></button>
+                        ${canDeleteInvoices
+                            ? `<button class="action-btn danger" title="Delete" onclick="deleteInvoice(${inv.id})"><i class="ti ti-trash"></i></button>`
+                            : ''}
                     </div>
                 </td>
             </tr>
@@ -220,6 +229,18 @@ async function viewInvoice(id) {
 
 // ── Delete ─────────────────────────────────────
 async function deleteInvoice(id) {
+    if (!canDeleteInvoices) {
+        await Swal.fire({
+            icon: 'warning',
+            title: 'Unauthorized',
+            text: 'Only admins can delete invoices.',
+            confirmButtonColor: '#4F46E5',
+            background: document.body.classList.contains('dark') ? '#111' : '#fff',
+            color: document.body.classList.contains('dark') ? '#fff' : '#111',
+        });
+        return;
+    }
+
     const result = await Swal.fire({
         title:              'Delete invoice?',
         text:               'Are you sure? This action cannot be undone.',

@@ -17,6 +17,7 @@ function updateThemeBtn(theme) {
 
 // ── User info ──────────────────────────────────
 const user = getUser();
+const canCreateOrders = !!user?.roles?.some(role => role === 'Admin' || role === 'Receptionist');
 if (user) {
     const initials = ((user.firstName?.[0]||'')+(user.lastName?.[0]||'')).toUpperCase()||'U';
     document.getElementById('sbAvatar').textContent   = initials;
@@ -24,6 +25,10 @@ if (user) {
     document.getElementById('sbUserRole').textContent = user.roles?.[0] || 'User';
 }
 document.getElementById('logoutBtn').addEventListener('click', logout);
+
+if (!canCreateOrders) {
+    document.getElementById('btnNewOrder').style.display = 'none';
+}
 
 // ── State ──────────────────────────────────────
 let currentPage = 1;
@@ -53,7 +58,7 @@ async function loadCatalogs() {
             api.get('/orderstatuses'),
             api.get('/servicetypes'),
             api.get('/vehicles?pageSize=100'),
-            api.get('/users?pageSize=100')
+            api.get('/users/mechanics')
         ]);
 
         fillSelect('fStatus',           statuses,     'Select status...',       'id', 'name');
@@ -322,6 +327,10 @@ document.getElementById('btnSave').addEventListener('click', async () => {
             }
 
         } else {
+            if (!canCreateOrders) {
+                throw new Error('Your role cannot create service orders.');
+            }
+
             await api.post('/serviceorders', {
                 vehicleId,
                 serviceTypeId,

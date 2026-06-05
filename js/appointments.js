@@ -53,7 +53,7 @@ async function loadCatalogs() {
             api.get('/appointmentstatuses'),
             api.get('/servicetypes'),
             api.get('/customers?pageSize=100'),
-            api.get('/users?pageSize=100')
+            api.get('/users/mechanics')
         ]);
 
         fillSelect('fStatus',      statuses,     'Select status...',       'id', 'name');

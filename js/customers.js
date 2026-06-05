@@ -17,6 +17,7 @@ function updateThemeBtn(theme) {
 
 // ── User info ──────────────────────────────────
 const user = getUser();
+const canDeleteCustomers = !!user?.roles?.includes('Admin');
 if (user) {
     const initials = ((user.firstName?.[0]||'')+(user.lastName?.[0]||'')).toUpperCase()||'U';
     document.getElementById('sbAvatar').textContent   = initials;
@@ -113,7 +114,9 @@ async function loadCustomers(page = 1) {
                     <div class="action-btns">
                         <button class="action-btn" title="View"   onclick="viewCustomer(${c.id})"><i class="ti ti-eye"></i></button>
                         <button class="action-btn" title="Edit"   onclick="editCustomer(${c.id})"><i class="ti ti-edit"></i></button>
-                        <button class="action-btn danger" title="Delete" onclick="deleteCustomer(${c.id}, '${name}')"><i class="ti ti-trash"></i></button>
+                        ${canDeleteCustomers
+                            ? `<button class="action-btn danger" title="Delete" onclick="deleteCustomer(${c.id}, '${name}')"><i class="ti ti-trash"></i></button>`
+                            : ''}
                     </div>
                 </td>
             </tr>`;
@@ -217,6 +220,18 @@ async function editCustomer(id) {
 
 // ── Delete customer ────────────────────────────
 async function deleteCustomer(id, name) {
+    if (!canDeleteCustomers) {
+        await Swal.fire({
+            icon: 'warning',
+            title: 'Permission denied',
+            text: 'Only admins can delete customers.',
+            confirmButtonColor: '#4F46E5',
+            background: document.body.classList.contains('dark') ? '#111' : '#fff',
+            color: document.body.classList.contains('dark') ? '#fff' : '#111',
+        });
+        return;
+    }
+
     const result = await Swal.fire({
         title:              'Delete customer?',
         text:               `Are you sure you want to delete "${name}"? This action cannot be undone.`,
